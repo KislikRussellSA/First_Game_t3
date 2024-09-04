@@ -35,10 +35,15 @@ var mon = 0
 var mon_a = "Attack_dog"
 var mon_d = "Death_dog"
 var factor = 1
+var i = 0
+var cur = 0
+var cont = false
+var end = rng.rand_weighted([0, .5, .3, .1, .075, .025])
+var tell = true
 @export var game: String:
 	set = set_type
 @export var coin: PackedScene = preload("res://coin.tscn")
-@export var coins : Dictionary = {"Copper": 0, "Silver": 0, "Gold": 0}
+@export var coins : Dictionary = {"Copper": 0, "Silver": 0, "Gold": 1000000}
 # Called when the node enters the scene tree for the first time.
 
 func set_type(_type):
@@ -263,39 +268,55 @@ func combat(delta: float, Difficulty) -> void:
 		$MainChar.play("Death")
 		$Label.visible = true
 	if $EnemyHealth.value <= 0 and Difficulty != 0:
-		if stopped == 0:
-			c = coin.instantiate()
-			c._picked_up.connect(add_coin)
-			$Enemy.stop()
-			stopped += 1
+		if tell:
+			i = 0
+			cur = 0
+			cont = false
+			end = rng.rand_weighted([0, .5, .3, .1, .075, .025])
+			tell = false
+		if stopped == 0 and cont:
 			$Enemy.play(mon_d)
-			$Node2D2.add_child(c)
-			c.type = rng.rand_weighted([drop_copper, drop_silver, drop_gold])
-			c.position.x = 798
-			c.position.y = 360
 			$MainHealth.value += 15 * health
-			vx = rng.randf_range(100, 350)
-			vy = rng.randf_range(100, 350)
-			dir = rng.randi_range(0, 1)
+			stopped += 1
+		if stopped == 0:
+			if i == cur:
+				c = coin.instantiate()
+				c._picked_up.connect(add_coin)
+				$Node2D2.add_child(c)
+				c.type = rng.rand_weighted([drop_copper, drop_silver, drop_gold])
+				c.position.x = 798
+				c.position.y = 360
+				vx = rng.randf_range(100, 350)
+				vy = rng.randf_range(100, 350)
+				dir = rng.randi_range(0, 1)
+				cur += 1
+			$Enemy.stop()
+			
 		if vx>0:
 			if dir == 1:
 				c.global_position.x += vx*delta
 			if dir == 0:
 				c.global_position.x -= vx*delta
 			c.global_position.y -= vy*delta
-			vx -= .3
+			vx -= 3
 			vy -= 5
-		await $Enemy.animation_looped
-		if game == "s":
-			$Enemy.scale.x = 3 + .1*(Difficulty%10)
-			$Enemy.scale.y = 3 + .1*(Difficulty%10)
-			mon = floor(Difficulty/10)
 		else:
-			mon = rng.randi_range(0, 9)
-		$Enemy.play(mon_d)
-		$EnemyHealth.value = 10*Difficulty
-		$Enemy.speed_scale = 1
-		stopped = 0
+			i+= 1
+		if i == end:
+			cont = true
+		if cont:
+			await $Enemy.animation_looped
+			if game == "s":
+				$Enemy.scale.x = 3 + .1*(Difficulty%10)
+				$Enemy.scale.y = 3 + .1*(Difficulty%10)
+				mon = floor(Difficulty/10)
+			else:
+				mon = rng.randi_range(0, 9)
+			$Enemy.play(mon_d)
+			$EnemyHealth.value = 10*Difficulty
+			$Enemy.speed_scale = 1
+			stopped = 0
+			tell = true
 	if $EnemyHealth.value <= 0 and Difficulty == 0:
 		$Enemy.play(mon_d)
 		$Label.text = "YOU WIN!"
