@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://bpatce6tbelj4"]
+
+[ext_resource type="Script" path="res://coin.gd" id="2_2qpss"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pihqc"]
+radius = 142.666
+
+[node name="coin" type="Sprite2D"]
+position = Vector2(913.25, 853.625)
+scale = Vector2(0.177941, 0.186765)
+script = ExtResource("2_2qpss")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_pihqc")
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
