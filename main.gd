@@ -55,7 +55,7 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	factor = floor((attack + defense + health)/25)
+	factor = floor((attack + defense + health)/100)
 	if factor == 0:
 		factor = 1
 	if $TextureButton/atk/a_cost.text != "Cost: " + str(((attack+1)**2)*factor):
