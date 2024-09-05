@@ -43,7 +43,7 @@ var tell = true
 @export var game: String:
 	set = set_type
 @export var coin: PackedScene = preload("res://coin.tscn")
-@export var coins : Dictionary = {"Copper": 0, "Silver": 0, "Gold": 1000000}
+@export var coins : Dictionary = {"Copper": 0, "Silver": 0, "Gold": 0}
 # Called when the node enters the scene tree for the first time.
 
 func set_type(_type):
