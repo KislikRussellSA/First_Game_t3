@@ -5,7 +5,9 @@ var coins = {"Copper": 0, "Silver": 0, "Gold": 0}
 @export var type: int:
 	set = set_type
 
-signal _picked_up()
+signal _copper_picked_up()
+signal _silver_picked_up()
+signal _gold_picked_up()
 
 func set_type(_type):
 	type = _type
@@ -36,4 +38,9 @@ func _process(delta: float) -> void:
 
 func _on_area_2d_input_event(viewport: Node, event: InputEventMouseButton, shape_idx: int) -> void:
 	visible = false
-	emit_signal("_picked_up")
+	if type == 0:
+		emit_signal("_copper_picked_up")
+	if type == 1:
+		emit_signal("_silver_picked_up")
+	if type == 2:
+		emit_signal("_gold_picked_up")
