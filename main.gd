@@ -89,8 +89,11 @@ func _process(delta: float) -> void:
 		drop_silver = .04+.01*(Difficulty-1)
 		drop_copper = 1-drop_gold-drop_silver
 	else:
-		drop_silver = .64 - .006*(Difficulty-6)
-		drop_gold = .006*Difficulty
+		if Difficulty < 167:
+			drop_gold = .006*Difficulty
+			drop_silver = 1 - drop_gold
+		else:
+			drop_gold = 1
 	if stopped == 0:
 		if Difficulty != 0:
 			$Sprite2D.visible = true
@@ -281,9 +284,11 @@ func combat(delta: float, Difficulty) -> void:
 		if stopped == 0:
 			if i == cur:
 				c = coin.instantiate()
-				c._picked_up.connect(add_coin)
 				$Node2D2.add_child(c)
 				c.type = rng.rand_weighted([drop_copper, drop_silver, drop_gold])
+				c._copper_picked_up.connect(add_copper)
+				c._silver_picked_up.connect(add_silver)
+				c._gold_picked_up.connect(add_gold)
 				c.position.x = 798
 				c.position.y = 360
 				vx = rng.randf_range(100, 350)
@@ -345,14 +350,14 @@ func area_detect():
 		return false
 	return true
 	
-func add_coin():
-	can_a = false
-	if c.type == 0:
-		coins["Copper"] += 1
-	if c.type == 1:
-		coins["Silver"] += 1
-	if c.type == 2:
-		coins["Gold"] += 1
+func add_copper():
+	coins["Copper"] += 1
+
+func add_silver():
+	coins["Silver"] += 1
+
+func add_gold():
+	coins["Gold"] += 1
 
 func _on_bag_area_mouse_entered() -> void:
 	mouse_in_inv = true
